@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModel="clr-namespace:Maui8TimeKeeper.ViewModels"
+             xmlns:models="clr-namespace:Maui8TimeKeeper.Models"
+             x:DataType="viewModel:MainPageViewModel"
+             Title="Time Keeper"
+             x:Class="Maui8TimeKeeper.MainPage">
+
+    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, *">
+        <Entry x:Name="entryText" />
+        <Button Grid.Column="1" Text="Add" Command="{Binding AddTimeCardCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="*, Auto">
+            <CollectionView ItemsSource="{Binding TimeCards}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:TimeCard">
+                        <Frame BackgroundColor="CornflowerBlue" Margin="10" Padding="10, 15, 10, 5" BorderColor="Cornsilk">
+                            <VerticalStackLayout>
+                                <Button Text="{Binding Name}"
+                                    Command="{Binding Path=ToggleEnabledCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}"
+                                    CommandParameter="{Binding .}">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding IsActive}" Value="True">
+                                            <Setter Property="Background" Value="DarkGreen" />
+                                            <Setter Property="TextColor" Value="White" />
+                                        </DataTrigger>
+                                        <DataTrigger   TargetType="Button"  Binding="{Binding IsActive}" Value="False">
+                                            <Setter Property="Background" Value="LightGray" />
+                                            <Setter Property="TextColor" Value="black" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                                <HorizontalStackLayout>
+                                    <Label Text="{Binding TotalTime, StringFormat='{0:hh}:{0:mm}:{0:ss}'}" />
+                                    <Label Text="{Binding DecimalTime, StringFormat=' ({0})'}" />
+                                </HorizontalStackLayout>
+                                <CollectionView ItemsSource="{Binding Durations}" IsVisible="{Binding Path=ShowDetails, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="models:Duration">
+                                            <HorizontalStackLayout>
+                                                <Label Text="{Binding StartTime, StringFormat='{0:hh}:{0:mm} -'}" />
+                                                <Label Text="{Binding EndTime, StringFormat=' {0:hh}:{0:mm}'}" />
+                                                <Label Text="{Binding Elapsed, StringFormat=' | {0:hh}:{0:mm}:{0:ss}'}" />
+                                                <Label Text="{Binding DecimalElapsed, StringFormat=' ({0})'}" />
+                                            </HorizontalStackLayout>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </VerticalStackLayout>
+                            <Frame.Triggers>
+
+                                <DataTrigger TargetType="Frame"  Binding="{Binding IsActive}" Value="True">
+                                    <Setter Property="Background" Value="Green" />
+                                </DataTrigger>
+                                <DataTrigger   TargetType="Frame"  Binding="{Binding IsActive}" Value="False">
+                                    <Setter Property="Background" Value="Gray" />
+                                </DataTrigger>
+                            </Frame.Triggers>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <VerticalStackLayout Grid.Column="1" Margin="10">
+                <Label Text="{Binding TotalTime, StringFormat='{0:hh}:{0:mm}:{0:ss}'}" FontSize="Large" />
+                <Label Text="{Binding DecimalTime, StringFormat='{0:0.0}'}" FontSize="Large" />
+                <Label Text="{Binding TimeLeft, StringFormat='{0:hh}:{0:mm}:{0:ss}'}" FontSize="Large" />
+                <Label Text="{Binding EndOfDay, StringFormat='{0:T}'}" FontSize="Large" />
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>
