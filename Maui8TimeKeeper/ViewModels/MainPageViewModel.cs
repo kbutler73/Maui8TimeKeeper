@@ -23,6 +23,7 @@ public partial class MainPageViewModel : ObservableObject
     {
         if (Preferences.ContainsKey("data"))
         {
+            LengthOfDay = Preferences.Get(nameof(LengthOfDay), 9.0);
             var data = Preferences.Get("data", "");
             var cards = JsonConvert.DeserializeObject<List<TimeCard>>(data);
 
@@ -39,6 +40,8 @@ public partial class MainPageViewModel : ObservableObject
     {
         var data = JsonConvert.SerializeObject(TimeCards);
         Preferences.Set("data", data);
+
+        Preferences.Set(nameof(LengthOfDay), LengthOfDay);
     }
 
     private void TimeCards_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -109,6 +112,9 @@ public partial class MainPageViewModel : ObservableObject
     [ObservableProperty]
     private bool showDetails = true;
 
+    [ObservableProperty]
+    private string entryText = "";
+
     [RelayCommand]
     private void AddTimeCard(string name)
     {
@@ -116,6 +122,7 @@ public partial class MainPageViewModel : ObservableObject
         TimeCards.Add(timeCard);
         timeCard.Notes.Add("test note");
         Save();
+        EntryText = "";
     }
 
     [RelayCommand]
@@ -132,5 +139,42 @@ public partial class MainPageViewModel : ObservableObject
             timeCard.ToggleIsActive();
         }
         Save();
+    }
+
+    [RelayCommand]
+    private void DeleteCard(TimeCard timeCard)
+    {
+        TimeCards.Remove(timeCard);
+        Save();
+    }
+
+    [RelayCommand]
+    private void ClearCards()
+    {
+        foreach (var timeCard in TimeCards)
+        {
+            timeCard.IsActive = false;
+            timeCard.Durations.Clear();
+            timeCard.Notes.Clear();
+            timeCard.UpdateTotalTime();
+        }
+        Save();
+    }
+
+    [RelayCommand]
+    private void SetDayLength(string value)
+    {
+        if (double.TryParse(value, out var len))
+        {
+            LengthOfDay = len;
+        }
+        EntryText = "";
+        Save();
+    }
+
+    [RelayCommand]
+    private void ToggleShowDetails()
+    {
+        ShowDetails = !showDetails;
     }
 }
