@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Maui8TimeKeeper.Models;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Text.Json;
 
 namespace Maui8TimeKeeper.ViewModels;
 
@@ -24,7 +24,7 @@ public partial class MainPageViewModel : ObservableObject
         if (Preferences.ContainsKey("data"))
         {
             var data = Preferences.Get("data", "");
-            var cards = JsonSerializer.Deserialize<List<TimeCard>>(data);
+            var cards = JsonConvert.DeserializeObject<List<TimeCard>>(data);
 
             if (cards is null) return;
 
@@ -37,7 +37,7 @@ public partial class MainPageViewModel : ObservableObject
 
     private void Save()
     {
-        var data = JsonSerializer.Serialize(TimeCards);
+        var data = JsonConvert.SerializeObject(TimeCards);
         Preferences.Set("data", data);
     }
 
