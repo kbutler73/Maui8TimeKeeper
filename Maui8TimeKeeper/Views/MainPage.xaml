@@ -9,6 +9,7 @@
              x:Class="Maui8TimeKeeper.MainPage">
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{Binding EditingEnabledText}" Command="{Binding ToggleEditingEnabledCommand}" />
         <ToolbarItem Text="Show Details" Order="Secondary" Command="{Binding ToggleShowDetailsCommand}" />
         <ToolbarItem Text="Clear" Order="Secondary" Command="{Binding ClearCardsCommand}" />
         <ToolbarItem Text="Set Day Length" Order="Secondary" Command="{Binding SetDayLengthCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
@@ -21,10 +22,11 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:TimeCard">
                         <Frame Margin="10" Padding="10, 15, 10, 5" BorderColor="Cornsilk">
+                            <!--<Frame Margin="10" Padding="10, 15, 10, 5" BorderColor="Cornsilk" IsEnabled="{Binding Path=EditingEnabled, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}">-->
                             <VerticalStackLayout>
                                 <SwipeView android:SwipeView.SwipeTransitionMode="Drag">
                                     <SwipeView.RightItems>
-                                        <SwipeItem Text="Edit" />
+                                        <SwipeItem Text="Edit" Command="{Binding Path=EditCardCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" />
                                     </SwipeView.RightItems>
                                     <SwipeView.LeftItems>
                                         <SwipeItem Text="Delete" BackgroundColor="Red"

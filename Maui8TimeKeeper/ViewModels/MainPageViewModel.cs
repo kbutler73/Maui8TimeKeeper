@@ -1,16 +1,24 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Maui8TimeKeeper.Models;
+using Maui8TimeKeeper.Views;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace Maui8TimeKeeper.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
+    private readonly Timer _timer = new Timer(10000);
+
     public MainPageViewModel()
     {
+        _timer.AutoReset = false;
+        _timer.Elapsed += _timer_Elapsed;
+
         TimeCards = [];
         TimeCards.CollectionChanged += TimeCards_CollectionChanged;
 
@@ -58,7 +66,7 @@ public partial class MainPageViewModel : ObservableObject
 
     private void Card_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(TimeCard.TotalTime))
+        if (e == null || e.PropertyName == nameof(TimeCard.TotalTime))
         {
             var time = TimeSpan.Zero;
             var dTime = 0.0;
@@ -115,6 +123,12 @@ public partial class MainPageViewModel : ObservableObject
     [ObservableProperty]
     private string entryText = "";
 
+    [ObservableProperty]
+    private bool editingEnabled = false;
+
+    [ObservableProperty]
+    private string editingEnabledText = "Edit";
+
     [RelayCommand]
     private void AddTimeCard(string name)
     {
@@ -128,6 +142,11 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void ToggleEnabled(TimeCard timeCard)
     {
+        if (!EditingEnabled) return;
+
+        _timer.Stop();
+        _timer.Start();
+
         var enabledTimeCard = TimeCards.FirstOrDefault(x => x.IsActive);
         if (enabledTimeCard != null)
         {
@@ -158,6 +177,7 @@ public partial class MainPageViewModel : ObservableObject
             timeCard.Notes.Clear();
             timeCard.UpdateTotalTime();
         }
+        Card_PropertyChanged(this, null);
         Save();
     }
 
@@ -176,5 +196,34 @@ public partial class MainPageViewModel : ObservableObject
     private void ToggleShowDetails()
     {
         ShowDetails = !showDetails;
+    }
+
+    [RelayCommand]
+    private async Task EditCard(TimeCard timeCard)
+    {
+        await Shell.Current.GoToAsync(nameof(TimeCardDetailView));
+    }
+
+    [RelayCommand]
+    private void ToggleEditingEnabled()
+    {
+        if (EditingEnabled)
+        {
+            _timer.Stop();
+            EditingEnabled = false;
+            EditingEnabledText = "Edit";
+        }
+        else
+        {
+            EditingEnabled = true;
+            EditingEnabledText = "Disable Editing";
+            _timer.Start();
+        }
+    }
+
+    private void _timer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+        EditingEnabled = false;
+        EditingEnabledText = "Edit";
     }
 }

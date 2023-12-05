@@ -1,4 +1,5 @@
 ﻿using Maui8TimeKeeper.ViewModels;
+using Maui8TimeKeeper.Views;
 using Microsoft.Extensions.Logging;
 
 namespace Maui8TimeKeeper;
@@ -19,6 +20,7 @@ public static class MauiProgram
         builder.Services
             .AddSingleton<MainPageViewModel>()
             .AddSingleton<MainPage>()
+            .AddTransient<TimeCardDetailView>()
             ;
 
 #if DEBUG
