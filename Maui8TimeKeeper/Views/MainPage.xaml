@@ -26,7 +26,8 @@
                             <VerticalStackLayout>
                                 <SwipeView android:SwipeView.SwipeTransitionMode="Drag">
                                     <SwipeView.RightItems>
-                                        <SwipeItem Text="Edit" Command="{Binding Path=EditCardCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" />
+                                        <SwipeItem Text="Edit" Command="{Binding Path=EditCardCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}"
+                                                   CommandParameter="{Binding .}" />
                                     </SwipeView.RightItems>
                                     <SwipeView.LeftItems>
                                         <SwipeItem Text="Delete" BackgroundColor="Red"

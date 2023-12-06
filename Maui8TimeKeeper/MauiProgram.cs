@@ -21,6 +21,8 @@ public static class MauiProgram
             .AddSingleton<MainPageViewModel>()
             .AddSingleton<MainPage>()
             .AddTransient<TimeCardDetailView>()
+            .AddTransient<TimeCardDetailViewModel>()
+            .AddSingleton<TimeCardService>()
             ;
 
 #if DEBUG

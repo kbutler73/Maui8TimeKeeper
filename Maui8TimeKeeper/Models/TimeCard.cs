@@ -29,9 +29,10 @@ public partial class TimeCard : ObservableObject
 
     public ObservableCollection<Duration> Durations { get; } = [];
 
-    public List<string> Notes { get; } = [];
+    public ObservableCollection<string> Notes { get; } = [];
 
-    public string Name { get; }
+    [ObservableProperty]
+    private string name;
 
     [ObservableProperty]
     private bool isActive;

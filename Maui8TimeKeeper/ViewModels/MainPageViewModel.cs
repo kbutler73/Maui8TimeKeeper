@@ -13,14 +13,16 @@ namespace Maui8TimeKeeper.ViewModels;
 public partial class MainPageViewModel : ObservableObject
 {
     private readonly Timer _timer = new Timer(10000);
+    private readonly TimeCardService _timeCardService;
 
-    public MainPageViewModel()
+    public MainPageViewModel(TimeCardService timeCardService)
     {
         _timer.AutoReset = false;
         _timer.Elapsed += _timer_Elapsed;
 
         TimeCards = [];
         TimeCards.CollectionChanged += TimeCards_CollectionChanged;
+        _timeCardService = timeCardService;
 
         Load();
 
@@ -39,6 +41,7 @@ public partial class MainPageViewModel : ObservableObject
 
             foreach (var item in cards)
             {
+                _timeCardService.AddTimeCard(item);
                 TimeCards.Add(item);
             }
         }
@@ -54,10 +57,9 @@ public partial class MainPageViewModel : ObservableObject
 
     private void TimeCards_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        foreach (var card in TimeCards)
+        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
-            card.PropertyChanged -= Card_PropertyChanged;
-            if (e.Action == NotifyCollectionChangedAction.Add)
+            foreach (TimeCard card in e.NewItems)
             {
                 card.PropertyChanged += Card_PropertyChanged;
             }
@@ -133,6 +135,7 @@ public partial class MainPageViewModel : ObservableObject
     private void AddTimeCard(string name)
     {
         var timeCard = new TimeCard(name);
+        _timeCardService.AddTimeCard(timeCard);
         TimeCards.Add(timeCard);
         timeCard.Notes.Add("test note");
         Save();
@@ -163,12 +166,14 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void DeleteCard(TimeCard timeCard)
     {
+        timeCard.PropertyChanged -= Card_PropertyChanged;
+        _timeCardService.RemoveTimeCard(timeCard.Id);
         TimeCards.Remove(timeCard);
         Save();
     }
 
     [RelayCommand]
-    private void ClearCards()
+    private void ClearCards() //TODO: move this to service?
     {
         foreach (var timeCard in TimeCards)
         {
@@ -195,13 +200,13 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void ToggleShowDetails()
     {
-        ShowDetails = !showDetails;
+        ShowDetails = !ShowDetails;
     }
 
     [RelayCommand]
     private async Task EditCard(TimeCard timeCard)
     {
-        await Shell.Current.GoToAsync(nameof(TimeCardDetailView));
+        await Shell.Current.GoToAsync($"{nameof(TimeCardDetailView)}?Id={timeCard.Id}");
     }
 
     [RelayCommand]
