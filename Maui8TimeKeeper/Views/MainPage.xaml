@@ -11,8 +11,9 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="{Binding EditingEnabledText}" Command="{Binding ToggleEditingEnabledCommand}" />
         <ToolbarItem Text="Show Details" Order="Secondary" Command="{Binding ToggleShowDetailsCommand}" />
-        <ToolbarItem Text="Clear" Order="Secondary" Command="{Binding ClearCardsCommand}" />
         <ToolbarItem Text="Set Day Length" Order="Secondary" Command="{Binding SetDayLengthCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
+        <ToolbarItem Order="Secondary" />
+        <ToolbarItem Text="End Day" Order="Secondary" Command="{Binding ClearCardsCommand}" IsEnabled="{Binding EditingEnabled}" />
     </ContentPage.ToolbarItems>
     <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, *">
         <Entry x:Name="entryText" Text="{Binding EntryText}" />
