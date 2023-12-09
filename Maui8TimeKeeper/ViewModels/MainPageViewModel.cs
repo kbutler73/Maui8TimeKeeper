@@ -25,8 +25,6 @@ public partial class MainPageViewModel : ObservableObject
         _timeCardService = timeCardService;
 
         Load();
-
-        //Task.Run(UpdateLoop);
     }
 
     private void Load()
@@ -34,7 +32,9 @@ public partial class MainPageViewModel : ObservableObject
         if (Preferences.ContainsKey("data"))
         {
             LengthOfDay = Preferences.Get(nameof(LengthOfDay), 9.0);
+
             var data = Preferences.Get("data", "");
+
             var cards = JsonConvert.DeserializeObject<List<TimeCard>>(data);
 
             if (cards is null) return;
@@ -64,6 +64,7 @@ public partial class MainPageViewModel : ObservableObject
                 card.PropertyChanged += Card_PropertyChanged;
             }
         }
+        Save();
     }
 
     private void Card_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -84,14 +85,6 @@ public partial class MainPageViewModel : ObservableObject
             EndOfDay = DateTime.Now + TimeLeft;
         }
     }
-
-    //private async Task UpdateLoop()
-    //{
-    //    while (true)
-    //    {
-    //        await Task.Delay(100);
-    //    }
-    //}
 
     private ObservableCollection<TimeCard> _timeCards = [];
 
@@ -138,7 +131,7 @@ public partial class MainPageViewModel : ObservableObject
         _timeCardService.AddTimeCard(timeCard);
         TimeCards.Add(timeCard);
         timeCard.Notes.Add("test note");
-        Save();
+        //Save();
         EntryText = "";
     }
 
@@ -169,7 +162,7 @@ public partial class MainPageViewModel : ObservableObject
         timeCard.PropertyChanged -= Card_PropertyChanged;
         _timeCardService.RemoveTimeCard(timeCard.Id);
         TimeCards.Remove(timeCard);
-        Save();
+        //Save();
     }
 
     [RelayCommand]

@@ -18,11 +18,10 @@
         <Entry x:Name="entryText" Text="{Binding EntryText}" />
         <Button Grid.Column="1" Text="Add" Command="{Binding AddTimeCardCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
         <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="*, Auto">
-            <CollectionView ItemsSource="{Binding TimeCards}">
+            <CollectionView ItemsSource="{Binding TimeCards}" SelectionMode="None" CanReorderItems="True">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:TimeCard">
                         <Frame Margin="10" Padding="10, 15, 10, 5" BorderColor="Cornsilk">
-                            <!--<Frame Margin="10" Padding="10, 15, 10, 5" BorderColor="Cornsilk" IsEnabled="{Binding Path=EditingEnabled, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}">-->
                             <VerticalStackLayout>
                                 <SwipeView android:SwipeView.SwipeTransitionMode="Drag">
                                     <SwipeView.RightItems>
@@ -74,6 +73,26 @@
                                     <Setter Property="Background" Value="Gray" />
                                 </DataTrigger>
                             </Frame.Triggers>
+                            <Frame.GestureRecognizers>
+                                <DragGestureRecognizer CanDrag="True"
+                                                       DragStartingCommand="{Binding ItemDraggedCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" />
+                                <!--<DropGestureRecognizer AllowDrop="True"
+                                                       DropCommand="{Binding ItemDroppedCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" />-->
+                            </Frame.GestureRecognizers>
+                            <!--<Frame.GestureRecognizers>
+                                <DragGestureRecognizer
+    CanDrag="True"
+    DragStartingCommand="{Binding BindingContext.ItemDraggedCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}"
+    DragStartingCommandParameter="{Binding}" />
+                                <DropGestureRecognizer
+    AllowDrop="True"
+    DragLeaveCommand="{Binding BindingContext.ItemDragLeaveCommand, Source={x:Reference MainPageContainer}}"
+    DragLeaveCommandParameter="{Binding}"
+    DragOverCommand="{Binding BindingContext.ItemDraggedOverCommand, Source={x:Reference MainPageContainer}}"
+    DragOverCommandParameter="{Binding}"
+    DropCommand="{Binding BindingContext.ItemDroppedCommand, Source={x:Reference MainPageContainer}}"
+    DropCommandParameter="{Binding}" />
+                            </Frame.GestureRecognizers>-->
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

@@ -8,5 +8,10 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
+
+        MessagingCenter.Subscribe<MainPageViewModel, string>(this, "ShowAlert", async (x, message) =>
+        {
+            await DisplayAlert("Alert", message, "OK");
+        });
     }
 }
