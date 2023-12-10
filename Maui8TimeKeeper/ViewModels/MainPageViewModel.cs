@@ -15,6 +15,17 @@ public partial class MainPageViewModel : ObservableObject
     private readonly Timer _timer = new Timer(10000);
     private readonly TimeCardService _timeCardService;
 
+    private const string locked = "\ue897";
+    private const string lock_open = "\ue898";
+
+    //private static string locked = ConvertToGlyph("e897");
+    //private static string lock_open = ConvertToGlyph("e898");
+
+    //private const string locked = "&#xe897;";
+    //private const string lock_open = "&#xe898;";
+
+    //private const string lock_outline = "e899";
+
     public MainPageViewModel(TimeCardService timeCardService)
     {
         _timer.AutoReset = false;
@@ -45,6 +56,12 @@ public partial class MainPageViewModel : ObservableObject
                 TimeCards.Add(item);
             }
         }
+    }
+
+    private static string ConvertToGlyph(string code)
+    {
+        var chars = new char[] { (char)Convert.ToInt32(code, 16) };
+        return new string(chars);
     }
 
     private void Save()
@@ -119,10 +136,13 @@ public partial class MainPageViewModel : ObservableObject
     private string entryText = "";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EditingNotEnabled))]
     private bool editingEnabled = false;
 
+    public bool EditingNotEnabled => !EditingEnabled;
+
     [ObservableProperty]
-    private string editingEnabledText = "Edit";
+    private string editingEnabledGlyph = locked;
 
     [RelayCommand]
     private void AddTimeCard(string name)
@@ -209,12 +229,12 @@ public partial class MainPageViewModel : ObservableObject
         {
             _timer.Stop();
             EditingEnabled = false;
-            EditingEnabledText = "Edit";
+            EditingEnabledGlyph = locked;
         }
         else
         {
             EditingEnabled = true;
-            EditingEnabledText = "Disable Editing";
+            EditingEnabledGlyph = lock_open;
             _timer.Start();
         }
     }
@@ -222,6 +242,6 @@ public partial class MainPageViewModel : ObservableObject
     private void _timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
         EditingEnabled = false;
-        EditingEnabledText = "Edit";
+        EditingEnabledGlyph = locked;
     }
 }

@@ -9,15 +9,33 @@
              x:Class="Maui8TimeKeeper.MainPage">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{Binding EditingEnabledText}" Command="{Binding ToggleEditingEnabledCommand}" />
+        <!--<ToolbarItem Command="{Binding ToggleEditingEnabledCommand}" IsEnabled="{Binding EditingEnabled}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="MaterialIcons-Regular" Glyph="&#xe899;" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+        <ToolbarItem Command="{Binding ToggleEditingEnabledCommand}" IsEnabled="{Binding EditingNotEnabled}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="MaterialIcons-Regular" Glyph="&#xe898;" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>-->
         <ToolbarItem Text="Show Details" Order="Secondary" Command="{Binding ToggleShowDetailsCommand}" />
         <ToolbarItem Text="Set Day Length" Order="Secondary" Command="{Binding SetDayLengthCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
+        <ToolbarItem Text="Add" Order="Secondary" Command="{Binding AddTimeCardCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
         <ToolbarItem Order="Secondary" />
         <ToolbarItem Text="End Day" Order="Secondary" Command="{Binding ClearCardsCommand}" IsEnabled="{Binding EditingEnabled}" />
     </ContentPage.ToolbarItems>
     <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, *">
         <Entry x:Name="entryText" Text="{Binding EntryText}" />
-        <Button Grid.Column="1" Text="Add" Command="{Binding AddTimeCardCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
+        <ImageButton Grid.Column="1"
+                     Command="{Binding ToggleEditingEnabledCommand}"
+                     CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="MaterialIcons-Regular" Glyph="{Binding EditingEnabledGlyph}" />
+            </ImageButton.Source>
+        </ImageButton>
+
+        <!--<Button Grid.Column="1" Text="Add" Command="{Binding AddTimeCardCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />-->
         <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="*, Auto">
             <CollectionView ItemsSource="{Binding TimeCards}" SelectionMode="None" CanReorderItems="True">
                 <CollectionView.ItemTemplate>
