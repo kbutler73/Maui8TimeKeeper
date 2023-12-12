@@ -9,16 +9,7 @@
              x:Class="Maui8TimeKeeper.MainPage">
 
     <ContentPage.ToolbarItems>
-        <!--<ToolbarItem Command="{Binding ToggleEditingEnabledCommand}" IsEnabled="{Binding EditingEnabled}">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource FontFamily="MaterialIcons-Regular" Glyph="&#xe899;" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
-        <ToolbarItem Command="{Binding ToggleEditingEnabledCommand}" IsEnabled="{Binding EditingNotEnabled}">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource FontFamily="MaterialIcons-Regular" Glyph="&#xe898;" />
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>-->
+        <ToolbarItem Text="{Binding EmailAddress}" Order="Secondary" Command="{Binding SetEmailCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
         <ToolbarItem Text="Show Details" Order="Secondary" Command="{Binding ToggleShowDetailsCommand}" />
         <ToolbarItem Text="Set Day Length" Order="Secondary" Command="{Binding SetDayLengthCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
         <ToolbarItem Text="Add" Order="Secondary" Command="{Binding AddTimeCardCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />

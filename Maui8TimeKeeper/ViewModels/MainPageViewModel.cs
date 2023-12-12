@@ -18,14 +18,6 @@ public partial class MainPageViewModel : ObservableObject
     private const string locked = "\ue897";
     private const string lock_open = "\ue898";
 
-    //private static string locked = ConvertToGlyph("e897");
-    //private static string lock_open = ConvertToGlyph("e898");
-
-    //private const string locked = "&#xe897;";
-    //private const string lock_open = "&#xe898;";
-
-    //private const string lock_outline = "e899";
-
     public MainPageViewModel(TimeCardService timeCardService)
     {
         _timer.AutoReset = false;
@@ -44,6 +36,8 @@ public partial class MainPageViewModel : ObservableObject
         {
             LengthOfDay = Preferences.Get(nameof(LengthOfDay), 9.0);
 
+            EmailAddress = Preferences.Get("email", "");
+
             var data = Preferences.Get("data", "");
 
             var cards = JsonConvert.DeserializeObject<List<TimeCard>>(data);
@@ -56,12 +50,6 @@ public partial class MainPageViewModel : ObservableObject
                 TimeCards.Add(item);
             }
         }
-    }
-
-    private static string ConvertToGlyph(string code)
-    {
-        var chars = new char[] { (char)Convert.ToInt32(code, 16) };
-        return new string(chars);
     }
 
     private void Save()
@@ -113,6 +101,9 @@ public partial class MainPageViewModel : ObservableObject
             _timeCards = value;
         }
     }
+
+    [ObservableProperty]
+    private string emailAddress = "Set Email Address";
 
     [ObservableProperty]
     private TimeSpan totalTime;
@@ -188,6 +179,8 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void ClearCards() //TODO: move this to service?
     {
+        SendEmail();
+
         foreach (var timeCard in TimeCards)
         {
             timeCard.IsActive = false;
@@ -197,6 +190,41 @@ public partial class MainPageViewModel : ObservableObject
         }
         Card_PropertyChanged(this, null);
         Save();
+    }
+
+    private async Task SendEmail()
+    {
+        if (Email.Default.IsComposeSupported)
+        {
+            string subject = $"Time for {DateTime.Now.ToShortDateString()}";
+
+            string body = "";
+            foreach (var timeCard in TimeCards)
+            {
+                body += $"{timeCard.Name}:    {timeCard.DecimalTime}{Environment.NewLine}";
+            }
+            string[] recipients = [EmailAddress];
+
+            var message = new EmailMessage
+            {
+                Subject = subject,
+                Body = body,
+                BodyFormat = EmailBodyFormat.PlainText,
+                To = new List<string>(recipients)
+            };
+
+            await Email.Default.ComposeAsync(message);
+        }
+    }
+
+    [RelayCommand]
+    private void SetEmail(string email)
+    {
+        if (!string.IsNullOrEmpty(email))
+        {
+            EmailAddress = email;
+            Preferences.Set("email", email);
+        }
     }
 
     [RelayCommand]
