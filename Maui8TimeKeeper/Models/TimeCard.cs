@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 
 namespace Maui8TimeKeeper.Models;
@@ -29,10 +30,14 @@ public partial class TimeCard : ObservableObject
 
     public ObservableCollection<Duration> Durations { get; } = [];
 
-    public ObservableCollection<string> Notes { get; } = [];
+    [ObservableProperty]
+    private string notes;
 
     [ObservableProperty]
     private string name;
+
+    [ObservableProperty]
+    private string chargeCode;
 
     [ObservableProperty]
     private bool isActive;

@@ -14,6 +14,12 @@ public partial class TimeCardDetailViewModel : ObservableObject
     [ObservableProperty]
     private string name;
 
+    [ObservableProperty]
+    private string chargeCode;
+
+    [ObservableProperty]
+    private string note;
+
     public TimeCardDetailViewModel(TimeCardService timeCardService)
     {
         _timeCardService = timeCardService;
@@ -24,7 +30,9 @@ public partial class TimeCardDetailViewModel : ObservableObject
         await Task.Run(() =>
         {
             TimeCard = _timeCardService.GetTimeCard(id);
+            ChargeCode = TimeCard.ChargeCode;
             Name = TimeCard.Name;
+            Note = TimeCard.Notes;
         });
     }
 
@@ -34,8 +42,13 @@ public partial class TimeCardDetailViewModel : ObservableObject
         if (TimeCard != null)
         {
             TimeCard.Name = Name;
+            TimeCard.Notes = Note;
+            TimeCard.ChargeCode = ChargeCode;
             _timeCardService.UpdateTimeCard(TimeCard);
         }
+
+        await _timeCardService.Save();
+
         await Shell.Current.GoToAsync("..");
     }
 }

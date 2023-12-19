@@ -31,7 +31,7 @@
             <CollectionView ItemsSource="{Binding TimeCards}" SelectionMode="None" CanReorderItems="True">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:TimeCard">
-                        <Frame Margin="10" Padding="10, 15, 10, 5" BorderColor="Cornsilk">
+                        <Frame Margin="10" Padding="10, 15, 10, 5" BorderColor="CornflowerBlue">
                             <VerticalStackLayout>
                                 <SwipeView android:SwipeView.SwipeTransitionMode="Drag">
                                     <SwipeView.RightItems>
@@ -58,10 +58,13 @@
                                         </Button.Triggers>
                                     </Button>
                                 </SwipeView>
-                                <HorizontalStackLayout>
-                                    <Label Text="{Binding TotalTime, StringFormat='{0:hh}:{0:mm}:{0:ss}'}" />
-                                    <Label Text="{Binding DecimalTime, StringFormat=' ({0})'}" />
-                                </HorizontalStackLayout>
+                                <Grid ColumnDefinitions="*, auto">
+                                    <HorizontalStackLayout>
+                                        <Label Text="{Binding TotalTime, StringFormat='{0:hh}:{0:mm}:{0:ss}'}" />
+                                        <Label Text="{Binding DecimalTime, StringFormat=' ({0})'}" />
+                                    </HorizontalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding ChargeCode}" />
+                                </Grid>
                                 <CollectionView ItemsSource="{Binding Durations}" IsVisible="{Binding Path=ShowDetails, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}">
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate x:DataType="models:Duration">

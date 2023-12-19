@@ -5,15 +5,19 @@
              xmlns:vm="clr-namespace:Maui8TimeKeeper.ViewModels"
              x:DataType="vm:TimeCardDetailViewModel"
              Title="{Binding TimeCard.Name}">
-    <Grid RowDefinitions="Auto, Auto, Auto, *" ColumnDefinitions="Auto, *" ColumnSpacing="10">
-        <Label Text="Name" />
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, *, Auto" ColumnDefinitions="Auto, *" ColumnSpacing="10">
+        <Label Text="Name" VerticalTextAlignment ="Center" />
         <Entry Grid.Column="1" Text="{Binding Name}" />
 
         <Label Grid.Row="1" Text="Total Time" />
         <Label Grid.Row="1" Grid.Column="1" Text="{Binding TimeCard.TotalTime, StringFormat='{0:hh}:{0:mm}:{0:ss}'}" />
 
-        <Label Grid.Row="2" Text="{Binding TimeCard.Name}" />
+        <Label Grid.Row="2" Text="Charge Code" VerticalTextAlignment="Center" />
+        <Entry Grid.Row="2" Grid.Column="1" Text="{Binding ChargeCode}" />
 
-        <Button Grid.Row="3" Grid.ColumnSpan="2" VerticalOptions="End" HorizontalOptions="CenterAndExpand" Text="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding .}" />
+        <Label Grid.Row="3" Text="Notes:" VerticalTextAlignment="End" />
+        <Editor Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding Note}" />
+
+        <Button Grid.Row="5" Grid.ColumnSpan="2" VerticalOptions="End" HorizontalOptions="CenterAndExpand" Text="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding .}" />
     </Grid>
 </ContentPage>

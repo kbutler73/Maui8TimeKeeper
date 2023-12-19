@@ -26,36 +26,36 @@ public partial class MainPageViewModel : ObservableObject
         TimeCards = [];
         TimeCards.CollectionChanged += TimeCards_CollectionChanged;
         _timeCardService = timeCardService;
-
-        Load();
+        _timeCardService.OnTimeCardAdded += _timeCardService_OnTimeCardAdded;
+        Task.Run(Load);
     }
 
-    private void Load()
+    private void _timeCardService_OnTimeCardAdded(object? sender, TimeCard timeCard)
     {
-        if (Preferences.ContainsKey("data"))
+        TimeCards.Add(timeCard);
+    }
+
+    private async Task Load()
+    {
+        try
         {
-            LengthOfDay = Preferences.Get(nameof(LengthOfDay), 9.0);
-
-            EmailAddress = Preferences.Get("email", "");
-
-            var data = Preferences.Get("data", "");
-
-            var cards = JsonConvert.DeserializeObject<List<TimeCard>>(data);
-
-            if (cards is null) return;
-
-            foreach (var item in cards)
+            if (Preferences.ContainsKey("data"))
             {
-                _timeCardService.AddTimeCard(item);
-                TimeCards.Add(item);
+                LengthOfDay = Preferences.Get(nameof(LengthOfDay), 9.0);
+
+                EmailAddress = Preferences.Get("email", "");
+
+                await _timeCardService.Load();
             }
+        }
+        catch (Exception ex)
+        {
         }
     }
 
     private void Save()
     {
-        var data = JsonConvert.SerializeObject(TimeCards);
-        Preferences.Set("data", data);
+        _timeCardService?.Save();
 
         Preferences.Set(nameof(LengthOfDay), LengthOfDay);
     }
@@ -121,7 +121,7 @@ public partial class MainPageViewModel : ObservableObject
     private double lengthOfDay = 9.0;
 
     [ObservableProperty]
-    private bool showDetails = true;
+    private bool showDetails = false;
 
     [ObservableProperty]
     private string entryText = "";
@@ -140,9 +140,6 @@ public partial class MainPageViewModel : ObservableObject
     {
         var timeCard = new TimeCard(name);
         _timeCardService.AddTimeCard(timeCard);
-        TimeCards.Add(timeCard);
-        timeCard.Notes.Add("test note");
-        //Save();
         EntryText = "";
     }
 
@@ -173,7 +170,6 @@ public partial class MainPageViewModel : ObservableObject
         timeCard.PropertyChanged -= Card_PropertyChanged;
         _timeCardService.RemoveTimeCard(timeCard.Id);
         TimeCards.Remove(timeCard);
-        //Save();
     }
 
     [RelayCommand]
@@ -183,7 +179,6 @@ public partial class MainPageViewModel : ObservableObject
         {
             timeCard.IsActive = false;
             timeCard.Durations.Clear();
-            timeCard.Notes.Clear();
             timeCard.UpdateTotalTime();
         }
         Card_PropertyChanged(this, null);
