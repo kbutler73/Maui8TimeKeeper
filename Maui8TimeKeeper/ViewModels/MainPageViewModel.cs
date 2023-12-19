@@ -179,8 +179,6 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private void ClearCards() //TODO: move this to service?
     {
-        SendEmail();
-
         foreach (var timeCard in TimeCards)
         {
             timeCard.IsActive = false;
@@ -192,6 +190,7 @@ public partial class MainPageViewModel : ObservableObject
         Save();
     }
 
+    [RelayCommand]
     private async Task SendEmail()
     {
         if (Email.Default.IsComposeSupported)

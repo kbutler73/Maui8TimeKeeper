@@ -15,6 +15,7 @@
         <ToolbarItem Text="Add" Order="Secondary" Command="{Binding AddTimeCardCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
         <ToolbarItem Order="Secondary" />
         <ToolbarItem Text="End Day" Order="Secondary" Command="{Binding ClearCardsCommand}" IsEnabled="{Binding EditingEnabled}" />
+        <ToolbarItem Text="Send Email" Order="Secondary" Command="{Binding SendEmailCommand}" IsEnabled="{Binding EditingEnabled}" />
     </ContentPage.ToolbarItems>
     <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, *">
         <Entry x:Name="entryText" Text="{Binding EntryText}" />
@@ -26,7 +27,6 @@
             </ImageButton.Source>
         </ImageButton>
 
-        <!--<Button Grid.Column="1" Text="Add" Command="{Binding AddTimeCardCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />-->
         <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="*, Auto">
             <CollectionView ItemsSource="{Binding TimeCards}" SelectionMode="None" CanReorderItems="True">
                 <CollectionView.ItemTemplate>
