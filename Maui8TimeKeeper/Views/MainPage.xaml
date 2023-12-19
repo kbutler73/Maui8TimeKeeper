@@ -31,7 +31,7 @@
             <CollectionView ItemsSource="{Binding TimeCards}" SelectionMode="None" CanReorderItems="True">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:TimeCard">
-                        <Frame Margin="10" Padding="10, 15, 10, 5" BorderColor="CornflowerBlue">
+                        <Frame Margin="10" Padding="10, 15, 10, 5" BorderColor="Cornsilk">
                             <VerticalStackLayout>
                                 <SwipeView android:SwipeView.SwipeTransitionMode="Drag">
                                     <SwipeView.RightItems>
@@ -43,7 +43,7 @@
                                                     Command="{Binding Path=DeleteCardCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}"
                                                     CommandParameter="{Binding .}" />
                                     </SwipeView.LeftItems>
-                                    <Button Text="{Binding Name}"
+                                    <Button Text="{Binding Name}" FontSize="Large" Padding="0"
                                             Command="{Binding Path=ToggleEnabledCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}"
                                             CommandParameter="{Binding .}">
                                         <Button.Triggers>
@@ -69,8 +69,8 @@
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate x:DataType="models:Duration">
                                             <HorizontalStackLayout>
-                                                <Label Text="{Binding StartTime, StringFormat='{0:hh}:{0:mm} -'}" />
-                                                <Label Text="{Binding EndTime, StringFormat=' {0:hh}:{0:mm}'}" />
+                                                <Label Text="{Binding LocalStartTime, StringFormat='{0:HH}:{0:mm} -'}" />
+                                                <Label Text="{Binding LocalEndTime, StringFormat=' {0:HH}:{0:mm}'}" />
                                                 <Label Text="{Binding Elapsed, StringFormat=' | {0:hh}:{0:mm}:{0:ss}'}" />
                                                 <Label Text="{Binding DecimalElapsed, StringFormat=' ({0})'}" />
                                             </HorizontalStackLayout>
@@ -81,31 +81,17 @@
                             <Frame.Triggers>
                                 <DataTrigger TargetType="Frame"  Binding="{Binding IsActive}" Value="True">
                                     <Setter Property="Background" Value="Green" />
+                                    <Setter Property="BorderColor" Value="Cornsilk" />
                                 </DataTrigger>
                                 <DataTrigger   TargetType="Frame"  Binding="{Binding IsActive}" Value="False">
                                     <Setter Property="Background" Value="Gray" />
+                                    <Setter Property="BorderColor" Value="Gray" />
                                 </DataTrigger>
                             </Frame.Triggers>
                             <Frame.GestureRecognizers>
                                 <DragGestureRecognizer CanDrag="True"
                                                        DragStartingCommand="{Binding ItemDraggedCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" />
-                                <!--<DropGestureRecognizer AllowDrop="True"
-                                                       DropCommand="{Binding ItemDroppedCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" />-->
                             </Frame.GestureRecognizers>
-                            <!--<Frame.GestureRecognizers>
-                                <DragGestureRecognizer
-    CanDrag="True"
-    DragStartingCommand="{Binding BindingContext.ItemDraggedCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}"
-    DragStartingCommandParameter="{Binding}" />
-                                <DropGestureRecognizer
-    AllowDrop="True"
-    DragLeaveCommand="{Binding BindingContext.ItemDragLeaveCommand, Source={x:Reference MainPageContainer}}"
-    DragLeaveCommandParameter="{Binding}"
-    DragOverCommand="{Binding BindingContext.ItemDraggedOverCommand, Source={x:Reference MainPageContainer}}"
-    DragOverCommandParameter="{Binding}"
-    DropCommand="{Binding BindingContext.ItemDroppedCommand, Source={x:Reference MainPageContainer}}"
-    DropCommandParameter="{Binding}" />
-                            </Frame.GestureRecognizers>-->
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

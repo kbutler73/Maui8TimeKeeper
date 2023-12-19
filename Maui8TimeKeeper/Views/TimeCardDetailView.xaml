@@ -4,7 +4,7 @@
              x:Class="Maui8TimeKeeper.Views.TimeCardDetailView"
              xmlns:vm="clr-namespace:Maui8TimeKeeper.ViewModels"
              x:DataType="vm:TimeCardDetailViewModel"
-             Title="{Binding TimeCard.Name}">
+             Title="{Binding TimeCard.Name}" HideSoftInputOnTapped="True">
     <Grid RowDefinitions="Auto, Auto, Auto, Auto, *, Auto" ColumnDefinitions="Auto, *" ColumnSpacing="10">
         <Label Text="Name" VerticalTextAlignment ="Center" />
         <Entry Grid.Column="1" Text="{Binding Name}" />

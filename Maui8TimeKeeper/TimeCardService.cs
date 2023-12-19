@@ -59,9 +59,25 @@ public class TimeCardService
     {
         await Task.Run(() =>
         {
-            var data = Preferences.Get("data", "");
-            var timecards = JsonConvert.DeserializeObject<Dictionary<Guid, TimeCard>>(data);
+            Dictionary<Guid, TimeCard> timecards;
 
+            if (!Preferences.ContainsKey("data"))
+            {
+                timecards = new Dictionary<Guid, TimeCard>
+                {
+                    { Guid.NewGuid(), new TimeCard("Meetings") { ChargeCode = "Pgm Req/FD" } },
+                    { Guid.NewGuid(), new TimeCard("Stories") { ChargeCode = "SW Requirements" } },
+                    { Guid.NewGuid(), new TimeCard("Defects") },
+                    { Guid.NewGuid(), new TimeCard("OH") { ChargeCode = "ForceX Software Engr" } },
+                    { Guid.NewGuid(), new TimeCard("General") },
+                    { Guid.NewGuid(), new TimeCard("Code Spike") }
+                };
+            }
+            else
+            {
+                var data = Preferences.Get("data", "");
+                timecards = JsonConvert.DeserializeObject<Dictionary<Guid, TimeCard>>(data);
+            }
             if (timecards is null) return;
 
             foreach (var timeCard in timecards.Values)

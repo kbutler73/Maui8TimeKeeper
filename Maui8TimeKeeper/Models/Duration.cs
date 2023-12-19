@@ -6,10 +6,16 @@ namespace Maui8TimeKeeper.Models;
 public partial class Duration : ObservableObject
 {
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LocalStartTime))]
     private DateTime startTime;
 
+    public DateTime LocalStartTime => StartTime.ToLocalTime();
+
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LocalEndTime))]
     private DateTime endTime;
+
+    public DateTime LocalEndTime => EndTime.ToLocalTime();
 
     [ObservableProperty]
     private TimeSpan elapsed;

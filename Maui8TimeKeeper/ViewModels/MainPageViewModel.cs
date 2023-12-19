@@ -39,14 +39,11 @@ public partial class MainPageViewModel : ObservableObject
     {
         try
         {
-            if (Preferences.ContainsKey("data"))
-            {
-                LengthOfDay = Preferences.Get(nameof(LengthOfDay), 9.0);
+            LengthOfDay = Preferences.Get(nameof(LengthOfDay), 9.0);
 
-                EmailAddress = Preferences.Get("email", "");
+            EmailAddress = Preferences.Get("email", "Set Email");
 
-                await _timeCardService.Load();
-            }
+            await _timeCardService.Load();
         }
         catch (Exception ex)
         {
@@ -195,7 +192,7 @@ public partial class MainPageViewModel : ObservableObject
             string body = "";
             foreach (var timeCard in TimeCards)
             {
-                body += $"{timeCard.Name}:    {timeCard.DecimalTime}{Environment.NewLine}";
+                body += $"{timeCard.Name} ({timeCard.ChargeCode}):    {timeCard.DecimalTime}{Environment.NewLine}{timeCard.Notes}{Environment.NewLine}{Environment.NewLine}";
             }
             string[] recipients = [EmailAddress];
 
