@@ -15,9 +15,9 @@
         <Label Grid.Row="2" Text="Charge Code" VerticalTextAlignment="Center" />
         <Entry Grid.Row="2" Grid.Column="1" Text="{Binding ChargeCode}" />
 
-        <Label Grid.Row="3" Text="Notes:" VerticalTextAlignment="End" />
+        <Label Grid.Row="3" Grid.Column="0" Text="Notes:" VerticalTextAlignment="End" />
         <Editor Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding Note}" />
 
-        <Button Grid.Row="5" Grid.ColumnSpan="2" VerticalOptions="End" HorizontalOptions="CenterAndExpand" Text="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding .}" />
+        <Button Grid.Row="3" Grid.Column="1" HorizontalOptions="EndAndExpand" Text="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding .}" />
     </Grid>
 </ContentPage>
