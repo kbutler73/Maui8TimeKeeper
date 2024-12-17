@@ -16,8 +16,11 @@
         <Entry Grid.Row="2" Grid.Column="1" Text="{Binding ChargeCode}" />
 
         <Label Grid.Row="3" Grid.Column="0" Text="Notes:" VerticalTextAlignment="End" />
-        <Editor Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding Note}" />
+        <HorizontalStackLayout Grid.Row="3" Grid.Column="1" HorizontalOptions="EndAndExpand">
+            <Button Margin="0,0,20,0" Text="Clear" Command="{Binding ClearCommand}" CommandParameter="{Binding .}" />
+            <Button Text="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding .}" />
+        </HorizontalStackLayout>
 
-        <Button Grid.Row="3" Grid.Column="1" HorizontalOptions="EndAndExpand" Text="Save" Command="{Binding SaveCommand}" CommandParameter="{Binding .}" />
+        <Editor Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding Note}" />
     </Grid>
 </ContentPage>

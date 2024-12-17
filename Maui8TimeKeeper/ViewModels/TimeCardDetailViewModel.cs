@@ -51,4 +51,10 @@ public partial class TimeCardDetailViewModel : ObservableObject
 
         await Shell.Current.GoToAsync("..");
     }
+
+    [RelayCommand]
+    public async Task Clear()
+    {
+        Note = "";
+    }
 }
