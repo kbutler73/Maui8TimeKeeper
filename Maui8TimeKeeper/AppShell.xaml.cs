@@ -9,6 +9,7 @@ namespace Maui8TimeKeeper
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(TimeCardDetailView), typeof(TimeCardDetailView));
+            Routing.RegisterRoute(nameof(AdjustTimeView), typeof(AdjustTimeView));
         }
     }
 }

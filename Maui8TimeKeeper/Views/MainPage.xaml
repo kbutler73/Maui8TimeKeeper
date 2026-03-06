@@ -3,6 +3,7 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="{Binding EmailAddress}" Order="Secondary" Command="{Binding SetEmailCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
         <ToolbarItem Text="Show Details" Order="Secondary" Command="{Binding ToggleShowDetailsCommand}" />
+        <ToolbarItem Text="Adjust Time" Order="Secondary" Command="{Binding OpenAdjustTimeCommand}" />
         <ToolbarItem Text="Set Day Length" Order="Secondary" Command="{Binding SetDayLengthCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
         <ToolbarItem Text="Add" Order="Secondary" Command="{Binding AddTimeCardCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
         <ToolbarItem Order="Secondary" />

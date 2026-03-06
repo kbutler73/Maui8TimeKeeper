@@ -242,6 +242,12 @@ public partial class MainPageViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task OpenAdjustTime()
+    {
+        await Shell.Current.GoToAsync(nameof(AdjustTimeView));
+    }
+
+    [RelayCommand]
     private void ToggleEditingEnabled()
     {
         if (EditingEnabled)

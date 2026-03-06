@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Maui8TimeKeeper.ViewModels"
+             x:Class="Maui8TimeKeeper.Views.AdjustTimeView"
+             x:DataType="viewModels:AdjustTimeViewModel"
+             Title="Adjust Time">
+    <Grid RowDefinitions="Auto,Auto,Auto,*"
+          Padding="12"
+          BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}">
+        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*" ColumnSpacing="8">
+            <DatePicker Date="{Binding SelectedDate}" />
+            <Button Grid.Column="1" Text="-" Command="{Binding ZoomOutCommand}" />
+            <Button Grid.Column="2" Text="+" Command="{Binding ZoomInCommand}" />
+            <Button Grid.Column="3" Text="Reset" Command="{Binding ResetZoomCommand}" />
+            <Button Grid.Column="4" Text="{Binding ModeLabel}" Command="{Binding ToggleEditModeCommand}" />
+            <Label Grid.Column="5"
+                   VerticalTextAlignment="Center"
+                   HorizontalTextAlignment="End"
+                   Text="{Binding VisibleRangeLabel}" />
+        </Grid>
+
+        <Label Grid.Row="1"
+               Margin="0,8,0,8"
+               FontSize="12"
+               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}"
+               Text="{Binding StatusMessage}" />
+
+        <Label Grid.Row="2"
+               Margin="0,0,0,8"
+               FontSize="12"
+               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}"
+               Text="{Binding ZoomFactor, StringFormat='Zoom: {0:0.00}x'}" />
+
+        <GraphicsView Grid.Row="3"
+                      x:Name="TimelineCanvas"
+                      HeightRequest="{Binding CanvasHeight}"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="Fill"
+                      EnableTouchEvents="True"
+                      StartInteraction="OnTimelineStartInteraction"
+                      DragInteraction="OnTimelineDragInteraction"
+                      EndInteraction="OnTimelineEndInteraction"
+                      SizeChanged="OnTimelineCanvasSizeChanged">
+            <GraphicsView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnTimelineTapped" />
+                <PanGestureRecognizer PanUpdated="OnTimelinePanUpdated" />
+                <PointerGestureRecognizer PointerPressed="OnTimelinePointerPressed"
+                                          PointerMoved="OnTimelinePointerMoved"
+                                          PointerReleased="OnTimelinePointerReleased" />
+                <PinchGestureRecognizer PinchUpdated="OnTimelinePinchUpdated" />
+            </GraphicsView.GestureRecognizers>
+        </GraphicsView>
+    </Grid>
+</ContentPage>
