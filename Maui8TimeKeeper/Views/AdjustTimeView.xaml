@@ -5,16 +5,15 @@
              x:Class="Maui8TimeKeeper.Views.AdjustTimeView"
              x:DataType="viewModels:AdjustTimeViewModel"
              Title="Adjust Time">
-    <Grid RowDefinitions="Auto,Auto,Auto,*"
+    <Grid RowDefinitions="Auto,Auto,*"
           Padding="12"
           BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}">
-        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*" ColumnSpacing="8">
+        <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*" ColumnSpacing="8">
             <DatePicker Date="{Binding SelectedDate}" />
             <Button Grid.Column="1" Text="-" Command="{Binding ZoomOutCommand}" />
             <Button Grid.Column="2" Text="+" Command="{Binding ZoomInCommand}" />
             <Button Grid.Column="3" Text="Reset" Command="{Binding ResetZoomCommand}" />
-            <Button Grid.Column="4" Text="{Binding ModeLabel}" Command="{Binding ToggleEditModeCommand}" />
-            <Label Grid.Column="5"
+            <Label Grid.Column="4"
                    VerticalTextAlignment="Center"
                    HorizontalTextAlignment="End"
                    Text="{Binding VisibleRangeLabel}" />
@@ -26,18 +25,11 @@
                TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}"
                Text="{Binding StatusMessage}" />
 
-        <Label Grid.Row="2"
-               Margin="0,0,0,8"
-               FontSize="12"
-               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}"
-               Text="{Binding ZoomFactor, StringFormat='Zoom: {0:0.00}x'}" />
-
-        <GraphicsView Grid.Row="3"
+        <GraphicsView Grid.Row="2"
                       x:Name="TimelineCanvas"
                       HeightRequest="{Binding CanvasHeight}"
                       HorizontalOptions="Fill"
-                      VerticalOptions="Fill"
-                      EnableTouchEvents="True"
+                      VerticalOptions="StartAndExpand"
                       StartInteraction="OnTimelineStartInteraction"
                       DragInteraction="OnTimelineDragInteraction"
                       EndInteraction="OnTimelineEndInteraction"

@@ -27,6 +27,9 @@ public partial class AdjustTimeViewModel : ObservableObject
     }
 
     public const double BaseHourWidth = 120;
+    private const double MinZoomFactor = 0.35;
+    private const double MaxZoomFactor = 16.0;
+    private const double ZoomStepMultiplier = 1.25;
 
     public const double LeftColumnWidth = 130;
     public const double HeaderHeight = 34;
@@ -61,12 +64,6 @@ public partial class AdjustTimeViewModel : ObservableObject
     [ObservableProperty]
     private string visibleRangeLabel = string.Empty;
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ModeLabel))]
-    private bool editMode = true;
-
-    public string ModeLabel => EditMode ? "Editing Handles" : "Panning Timeline";
-
     public double PixelsPerMinute => TimelineWidth / Math.Max(1, VisibleMinutes);
 
     partial void OnSelectedDateChanged(DateTime value)
@@ -77,25 +74,19 @@ public partial class AdjustTimeViewModel : ObservableObject
     [RelayCommand]
     private void ZoomIn()
     {
-        ZoomAround(Math.Min(8.0, ZoomFactor + 0.5), LeftColumnWidth + (_viewportTimelineWidth / 2d));
+        ZoomAround(ZoomFactor * ZoomStepMultiplier, LeftColumnWidth + (_viewportTimelineWidth / 2d));
     }
 
     [RelayCommand]
     private void ZoomOut()
     {
-        ZoomAround(Math.Max(0.5, ZoomFactor - 0.5), LeftColumnWidth + (_viewportTimelineWidth / 2d));
+        ZoomAround(ZoomFactor / ZoomStepMultiplier, LeftColumnWidth + (_viewportTimelineWidth / 2d));
     }
 
     [RelayCommand]
     private void ResetZoom()
     {
         ZoomAround(1.0, LeftColumnWidth + (_viewportTimelineWidth / 2d));
-    }
-
-    [RelayCommand]
-    private void ToggleEditMode()
-    {
-        EditMode = !EditMode;
     }
 
     public void BeginDrag(TimelineHandleViewModel? handle)
@@ -139,7 +130,7 @@ public partial class AdjustTimeViewModel : ObservableObject
         }
 
         _dragAppliedMinutes[handle.Key] = totalDeltaMinutes;
-        LoadTimeline();
+        LoadTimeline(preserveWindow: true);
         return true;
     }
 
@@ -165,7 +156,7 @@ public partial class AdjustTimeViewModel : ObservableObject
         }
 
         _dragAppliedMinutes[key] = totalDeltaMinutes;
-        LoadTimeline();
+        LoadTimeline(preserveWindow: true);
         return true;
     }
 
@@ -178,6 +169,7 @@ public partial class AdjustTimeViewModel : ObservableObject
 
         _dragAppliedMinutes.Remove(handle.Key);
         await _timeCardService.Save();
+        LoadTimeline();
         StatusMessage = "Timeline updated.";
     }
 
@@ -214,14 +206,22 @@ public partial class AdjustTimeViewModel : ObservableObject
         return true;
     }
 
-    public void LoadTimeline()
+    public void LoadTimeline(bool preserveWindow = false)
     {
+        var cardOrder = _timeCardService.GetTimeCards()
+            .Select((card, index) => new { card.Id, index })
+            .ToDictionary(x => x.Id, x => x.index);
+
         var allSegments = _timeCardService.GetEditableTimelineSegments(SelectedDate)
-            .OrderBy(x => x.Card.Name)
+            .OrderBy(x => cardOrder.TryGetValue(x.Card.Id, out var index) ? index : int.MaxValue)
             .ThenBy(x => x.StartLocal)
             .ToList();
 
-        UpdateVisibleWindow(allSegments);
+        if (!preserveWindow)
+        {
+            UpdateVisibleWindow(allSegments);
+        }
+
         BuildHourMarkers();
 
         var rows = allSegments
@@ -235,7 +235,6 @@ public partial class AdjustTimeViewModel : ObservableObject
                     .Select(x => TimelineSegmentViewModel.Create(x, _windowStartLocal, PixelsPerMinute))
                     .ToList()
             })
-            .OrderBy(x => x.RowTitle)
             .ToList();
 
         Rows.Clear();
@@ -262,17 +261,12 @@ public partial class AdjustTimeViewModel : ObservableObject
 
     public void PanByPixels(double deltaX)
     {
-        if (EditMode)
-        {
-            return;
-        }
-
         PanOffsetPixels = Math.Clamp(PanOffsetPixels - deltaX, 0, MaxPanOffsetPixels);
     }
 
     public void ZoomAround(double targetZoomFactor, double anchorCanvasX)
     {
-        var clampedZoom = Math.Clamp(targetZoomFactor, 0.5, 8.0);
+        var clampedZoom = Math.Clamp(targetZoomFactor, MinZoomFactor, MaxZoomFactor);
         if (Math.Abs(clampedZoom - ZoomFactor) < 0.0001)
         {
             return;
@@ -283,7 +277,7 @@ public partial class AdjustTimeViewModel : ObservableObject
         var anchorMinute = (PanOffsetPixels + viewportX) / oldPixelsPerMinute;
 
         ZoomFactor = clampedZoom;
-        LoadTimeline();
+        LoadTimeline(preserveWindow: true);
 
         var newWorldX = anchorMinute * PixelsPerMinute;
         PanOffsetPixels = Math.Clamp(newWorldX - viewportX, 0, MaxPanOffsetPixels);

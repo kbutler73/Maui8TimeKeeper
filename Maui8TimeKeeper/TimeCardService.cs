@@ -5,6 +5,8 @@ namespace Maui8TimeKeeper;
 
 public class TimeCardService
 {
+    private static readonly TimeSpan BoundaryMatchTolerance = TimeSpan.FromSeconds(2);
+
     public event EventHandler<TimeCard>? OnTimeCardAdded;
 
     private readonly Dictionary<Guid, TimeCard> _timeCards = [];
@@ -256,6 +258,7 @@ public class TimeCardService
 
         Duration? linkedDuration = null;
         bool linkedIsStart = false;
+        var bestDiffTicks = long.MaxValue;
         foreach (var card in _timeCards.Values)
         {
             foreach (var duration in card.Durations)
@@ -265,24 +268,27 @@ public class TimeCardService
                     continue;
                 }
 
-                if (adjustStart && duration.EndTime != DateTime.MinValue && duration.EndTime == boundaryUtc)
+                if (adjustStart && duration.EndTime != DateTime.MinValue)
                 {
-                    linkedDuration = duration;
-                    linkedIsStart = false;
-                    break;
+                    var diff = (duration.EndTime - boundaryUtc).Duration();
+                    if (diff <= BoundaryMatchTolerance && diff.Ticks < bestDiffTicks)
+                    {
+                        linkedDuration = duration;
+                        linkedIsStart = false;
+                        bestDiffTicks = diff.Ticks;
+                    }
                 }
 
-                if (!adjustStart && duration.StartTime == boundaryUtc)
+                if (!adjustStart)
                 {
-                    linkedDuration = duration;
-                    linkedIsStart = true;
-                    break;
+                    var diff = (duration.StartTime - boundaryUtc).Duration();
+                    if (diff <= BoundaryMatchTolerance && diff.Ticks < bestDiffTicks)
+                    {
+                        linkedDuration = duration;
+                        linkedIsStart = true;
+                        bestDiffTicks = diff.Ticks;
+                    }
                 }
-            }
-
-            if (linkedDuration != null)
-            {
-                break;
             }
         }
 

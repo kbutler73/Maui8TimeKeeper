@@ -19,6 +19,7 @@ public partial class AdjustTimeView : ContentPage
     private double _lastPanTotalX;
 
     private const float HandleHitWidth = 42f;
+    private const double PinchResponseExponent = 1.35;
 
     public AdjustTimeView(AdjustTimeViewModel viewModel)
     {
@@ -69,7 +70,7 @@ public partial class AdjustTimeView : ContentPage
         }
 
         var point = e.Touches[0];
-        if (vm.EditMode && TryHitHandle(point, out var segment, out var isStartHandle))
+        if (TryHitHandle(point, out var segment, out var isStartHandle))
         {
             _activeSegment = segment;
             _activeIsStartHandle = isStartHandle;
@@ -145,7 +146,8 @@ public partial class AdjustTimeView : ContentPage
                 _pinchStartZoom = vm.ZoomFactor;
                 break;
             case GestureStatus.Running:
-                var targetZoom = _pinchStartZoom * e.Scale;
+                var adjustedScale = Math.Pow(e.Scale, PinchResponseExponent);
+                var targetZoom = _pinchStartZoom * adjustedScale;
                 var anchorX = e.ScaleOrigin.X * TimelineCanvas.Width;
                 vm.ZoomAround(targetZoom, anchorX);
                 TimelineCanvas.Invalidate();
@@ -155,7 +157,7 @@ public partial class AdjustTimeView : ContentPage
 
     private void OnTimelineTapped(object? sender, TappedEventArgs e)
     {
-        if (BindingContext is not AdjustTimeViewModel vm || !vm.EditMode)
+        if (BindingContext is not AdjustTimeViewModel vm)
         {
             return;
         }
@@ -197,7 +199,7 @@ public partial class AdjustTimeView : ContentPage
                         TimelineCanvas.Invalidate();
                     }
                 }
-                else if (!vm.EditMode)
+                else
                 {
                     var delta = e.TotalX - _lastPanTotalX;
                     _lastPanTotalX = e.TotalX;
@@ -234,7 +236,7 @@ public partial class AdjustTimeView : ContentPage
         }
 
         var point = new PointF((float)pos.Value.X, (float)pos.Value.Y);
-        if (vm.EditMode && TryHitHandle(point, out var segment, out var isStartHandle))
+        if (TryHitHandle(point, out var segment, out var isStartHandle))
         {
             _activeSegment = segment;
             _activeIsStartHandle = isStartHandle;
@@ -274,7 +276,7 @@ public partial class AdjustTimeView : ContentPage
             return;
         }
 
-        if (_isPanning && !vm.EditMode)
+        if (_isPanning)
         {
             var delta = point.X - _lastPanPoint.X;
             vm.PanByPixels(delta);
@@ -496,6 +498,10 @@ internal sealed class AdjustTimelineDrawable(AdjustTimeViewModel viewModel) : ID
             canvas.FontSize = 10;
             canvas.DrawString(row.Subtitle, 8, rowTop + 20, left - 12, 14, HorizontalAlignment.Left, VerticalAlignment.Center);
 
+            // Keep timeline bars out of the left label column while panning.
+            canvas.SaveState();
+            canvas.ClipRectangle(left, rowTop, (float)Math.Max(0, _viewModel.TimelineWidth), rowHeight);
+
             foreach (var segment in row.Segments)
             {
                 var x = left + (float)segment.Bounds.X - pan;
@@ -517,15 +523,14 @@ internal sealed class AdjustTimelineDrawable(AdjustTimeViewModel viewModel) : ID
                 canvas.FontSize = 10;
                 canvas.DrawString(segment.Label, x + 10, y, Math.Max(0, width - 20), height, HorizontalAlignment.Left, VerticalAlignment.Center);
 
-                if (_viewModel.EditMode)
-                {
-                    var handleTop = y + 2;
-                    var handleHeight = height - 4;
-                    canvas.FillColor = handleColor;
-                    canvas.FillRoundedRectangle(x, handleTop, 4, handleHeight, 2);
-                    canvas.FillRoundedRectangle(x + width - 4, handleTop, 4, handleHeight, 2);
-                }
+                var handleTop = y + 2;
+                var handleHeight = height - 4;
+                canvas.FillColor = handleColor;
+                canvas.FillRoundedRectangle(x, handleTop, 4, handleHeight, 2);
+                canvas.FillRoundedRectangle(x + width - 4, handleTop, 4, handleHeight, 2);
             }
+
+            canvas.RestoreState();
         }
     }
 }
