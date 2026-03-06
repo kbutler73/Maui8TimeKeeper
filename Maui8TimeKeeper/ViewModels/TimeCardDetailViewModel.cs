@@ -12,13 +12,13 @@ public partial class TimeCardDetailViewModel : ObservableObject
     private TimeCard? timeCard;
 
     [ObservableProperty]
-    private string name;
+    private string name = string.Empty;
 
     [ObservableProperty]
-    private string chargeCode;
+    private string chargeCode = string.Empty;
 
     [ObservableProperty]
-    private string note;
+    private string note = string.Empty;
 
     public TimeCardDetailViewModel(TimeCardService timeCardService)
     {
@@ -48,13 +48,12 @@ public partial class TimeCardDetailViewModel : ObservableObject
         }
 
         await _timeCardService.Save();
-
         await Shell.Current.GoToAsync("..");
     }
 
     [RelayCommand]
-    public async Task Clear()
+    public void Clear()
     {
-        Note = "";
+        Note = string.Empty;
     }
 }

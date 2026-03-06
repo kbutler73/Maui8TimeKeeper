@@ -2,9 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using Maui8TimeKeeper.Models;
 using Maui8TimeKeeper.Views;
-using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -12,7 +12,7 @@ namespace Maui8TimeKeeper.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
-    private readonly Timer _timer = new Timer(10000);
+    private readonly Timer _timer = new(10000);
     private readonly TimeCardService _timeCardService;
 
     private const string locked = "\ue897";
@@ -40,20 +40,18 @@ public partial class MainPageViewModel : ObservableObject
         try
         {
             LengthOfDay = Preferences.Get(nameof(LengthOfDay), 9.0);
-
             EmailAddress = Preferences.Get("email", "Set Email");
-
             await _timeCardService.Load();
         }
-        catch (Exception ex)
+        catch
         {
+            // Keep startup resilient if persisted data is malformed.
         }
     }
 
     private void Save()
     {
-        _timeCardService?.Save();
-
+        _timeCardService.Save();
         Preferences.Set(nameof(LengthOfDay), LengthOfDay);
     }
 
@@ -69,7 +67,7 @@ public partial class MainPageViewModel : ObservableObject
         Save();
     }
 
-    private void Card_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void Card_PropertyChanged(object? sender, PropertyChangedEventArgs? e)
     {
         if (e == null || e.PropertyName == nameof(TimeCard.TotalTime))
         {
@@ -93,10 +91,7 @@ public partial class MainPageViewModel : ObservableObject
     public ObservableCollection<TimeCard> TimeCards
     {
         get => _timeCards;
-        set
-        {
-            _timeCards = value;
-        }
+        set => _timeCards = value;
     }
 
     [ObservableProperty]
@@ -118,14 +113,14 @@ public partial class MainPageViewModel : ObservableObject
     private double lengthOfDay = 9.0;
 
     [ObservableProperty]
-    private bool showDetails = false;
+    private bool showDetails;
 
     [ObservableProperty]
-    private string entryText = "";
+    private string entryText = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(EditingNotEnabled))]
-    private bool editingEnabled = false;
+    private bool editingEnabled;
 
     public bool EditingNotEnabled => !EditingEnabled;
 
@@ -137,13 +132,16 @@ public partial class MainPageViewModel : ObservableObject
     {
         var timeCard = new TimeCard(name);
         _timeCardService.AddTimeCard(timeCard);
-        EntryText = "";
+        EntryText = string.Empty;
     }
 
     [RelayCommand]
     private void ToggleEnabled(TimeCard timeCard)
     {
-        if (!EditingEnabled) return;
+        if (!EditingEnabled)
+        {
+            return;
+        }
 
         _timer.Stop();
         _timer.Start();
@@ -158,6 +156,7 @@ public partial class MainPageViewModel : ObservableObject
         {
             timeCard.ToggleIsActive();
         }
+
         Save();
     }
 
@@ -170,7 +169,7 @@ public partial class MainPageViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ClearCards() //TODO: move this to service?
+    private void ClearCards()
     {
         foreach (var timeCard in TimeCards)
         {
@@ -178,6 +177,7 @@ public partial class MainPageViewModel : ObservableObject
             timeCard.Durations.Clear();
             timeCard.UpdateTotalTime();
         }
+
         Card_PropertyChanged(this, null);
         Save();
     }
@@ -187,21 +187,20 @@ public partial class MainPageViewModel : ObservableObject
     {
         if (Email.Default.IsComposeSupported)
         {
-            string subject = $"Time for {DateTime.Now.ToShortDateString()}";
+            var subject = $"Time for {DateTime.Now.ToShortDateString()}";
 
-            string body = "";
+            var body = string.Empty;
             foreach (var timeCard in TimeCards)
             {
                 body += $"{timeCard.Name} ({timeCard.ChargeCode}):    {timeCard.DecimalTime}{Environment.NewLine}{timeCard.Notes}{Environment.NewLine}{Environment.NewLine}";
             }
-            string[] recipients = [EmailAddress];
 
             var message = new EmailMessage
             {
                 Subject = subject,
                 Body = body,
                 BodyFormat = EmailBodyFormat.PlainText,
-                To = new List<string>(recipients)
+                To = [EmailAddress]
             };
 
             await Email.Default.ComposeAsync(message);
@@ -225,7 +224,8 @@ public partial class MainPageViewModel : ObservableObject
         {
             LengthOfDay = len;
         }
-        EntryText = "";
+
+        EntryText = string.Empty;
         Save();
     }
 

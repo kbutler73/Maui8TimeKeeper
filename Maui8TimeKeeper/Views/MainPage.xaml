@@ -1,13 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
-             xmlns:viewModel="clr-namespace:Maui8TimeKeeper.ViewModels"
-             xmlns:models="clr-namespace:Maui8TimeKeeper.Models"
-             x:DataType="viewModel:MainPageViewModel"
-             Title="Time Keeper" HideSoftInputOnTapped="True"
-             x:Class="Maui8TimeKeeper.MainPage">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls" xmlns:viewModel="clr-namespace:Maui8TimeKeeper.ViewModels" xmlns:models="clr-namespace:Maui8TimeKeeper.Models" x:DataType="viewModel:MainPageViewModel" Title="Time Keeper" HideSoftInputOnTapped="True" x:Class="Maui8TimeKeeper.MainPage">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="{Binding EmailAddress}" Order="Secondary" Command="{Binding SetEmailCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}" />
         <ToolbarItem Text="Show Details" Order="Secondary" Command="{Binding ToggleShowDetailsCommand}" />
@@ -19,14 +11,11 @@
     </ContentPage.ToolbarItems>
     <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, *">
         <Entry x:Name="entryText" Text="{Binding EntryText}" />
-        <ImageButton Grid.Column="1"
-                     Command="{Binding ToggleEditingEnabledCommand}"
-                     CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}">
+        <ImageButton Grid.Column="1" Command="{Binding ToggleEditingEnabledCommand}" CommandParameter="{Binding Source={x:Reference entryText}, Path=Text}">
             <ImageButton.Source>
                 <FontImageSource FontFamily="MaterialIcons-Regular" Glyph="{Binding EditingEnabledGlyph}" />
             </ImageButton.Source>
         </ImageButton>
-
         <Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="*, Auto">
             <CollectionView ItemsSource="{Binding TimeCards}" SelectionMode="None" CanReorderItems="True">
                 <CollectionView.ItemTemplate>
@@ -35,23 +24,18 @@
                             <VerticalStackLayout>
                                 <SwipeView android:SwipeView.SwipeTransitionMode="Drag">
                                     <SwipeView.RightItems>
-                                        <SwipeItem Text="Edit" Command="{Binding Path=EditCardCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}"
-                                                   CommandParameter="{Binding .}" />
+                                        <SwipeItem Text="Edit" Command="{Binding Path=EditCardCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" CommandParameter="{Binding .}" />
                                     </SwipeView.RightItems>
                                     <SwipeView.LeftItems>
-                                        <SwipeItem Text="Delete" BackgroundColor="Red"
-                                                    Command="{Binding Path=DeleteCardCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}"
-                                                    CommandParameter="{Binding .}" />
+                                        <SwipeItem Text="Delete" BackgroundColor="Red" Command="{Binding Path=DeleteCardCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" CommandParameter="{Binding .}" />
                                     </SwipeView.LeftItems>
-                                    <Button Text="{Binding Name}" FontSize="Large" Padding="0"
-                                            Command="{Binding Path=ToggleEnabledCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}"
-                                            CommandParameter="{Binding .}">
+                                    <Button Text="{Binding Name}" FontSize="Large" Padding="0" Command="{Binding Path=ToggleEnabledCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" CommandParameter="{Binding .}">
                                         <Button.Triggers>
                                             <DataTrigger TargetType="Button" Binding="{Binding IsActive}" Value="True">
                                                 <Setter Property="Background" Value="DarkGreen" />
                                                 <Setter Property="TextColor" Value="White" />
                                             </DataTrigger>
-                                            <DataTrigger   TargetType="Button"  Binding="{Binding IsActive}" Value="False">
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsActive}" Value="False">
                                                 <Setter Property="Background" Value="LightGray" />
                                                 <Setter Property="TextColor" Value="black" />
                                             </DataTrigger>
@@ -79,19 +63,15 @@
                                 </CollectionView>
                             </VerticalStackLayout>
                             <Frame.Triggers>
-                                <DataTrigger TargetType="Frame"  Binding="{Binding IsActive}" Value="True">
+                                <DataTrigger TargetType="Frame" Binding="{Binding IsActive}" Value="True">
                                     <Setter Property="Background" Value="Green" />
                                     <Setter Property="BorderColor" Value="Cornsilk" />
                                 </DataTrigger>
-                                <DataTrigger   TargetType="Frame"  Binding="{Binding IsActive}" Value="False">
+                                <DataTrigger TargetType="Frame" Binding="{Binding IsActive}" Value="False">
                                     <Setter Property="Background" Value="Gray" />
                                     <Setter Property="BorderColor" Value="Gray" />
                                 </DataTrigger>
                             </Frame.Triggers>
-                            <Frame.GestureRecognizers>
-                                <DragGestureRecognizer CanDrag="True"
-                                                       DragStartingCommand="{Binding ItemDraggedCommand, Source={RelativeSource AncestorType={x:Type viewModel:MainPageViewModel}}}" />
-                            </Frame.GestureRecognizers>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
